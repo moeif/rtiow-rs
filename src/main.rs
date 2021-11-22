@@ -9,22 +9,27 @@ fn hit_sphere(center: Vec3, radius: f64, r: Ray) -> f64 {
     let oc = r.origin - center;
 
     // 公式中第1项的 b*b
-    let a = Vec3::dot(r.direction, r.direction);
+    // let a = Vec3::dot(r.direction, r.direction);
+    let a = r.direction.length_squared();
 
     // 公式中第2项的内容，忽略 t
-    let b = 2.0 * Vec3::dot(oc, r.direction);
+    // let b = 2.0 * Vec3::dot(oc, r.direction);
+    let half_b = Vec3::dot(oc, r.direction);
 
     // 公式中的 (A - C) * (A - C) - r^2
-    let c = Vec3::dot(oc, oc) - radius * radius;
+    // let c = Vec3::dot(oc, oc) - radius * radius;
+    let c = oc.length_squared() - radius * radius;
 
     // 计算出了 a, b, c，判断 b^2 - 4ac 解的个数
-    let result = b * b - 4.0 * a * c;
+    // let result = b * b - 4.0 * a * c;
+    let result = half_b * half_b - a * c;
 
     // -----------------------------------
     if result < 0.0 {
         return -1.0;
     } else {
-        return (-b - result.sqrt()) / (2.0 * a);
+        // return (-b - result.sqrt()) / (2.0 * a);
+        return (-half_b - result.sqrt()) / a;
     }
     // -----------------------------------
 }
