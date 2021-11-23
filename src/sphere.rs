@@ -29,7 +29,8 @@ impl Hittable for Sphere {
 
         let sqrtd = result.sqrt();
 
-        // Find the nearest root that lies in the acceptable range.
+        // 找到光线打到球面最近的点，有可能光线会穿透球体，与两个点相交，
+        // 但是远的点会被近的面遮住，我们看不到，所以这里使用近的点就可以了
         let mut root = (-half_b - sqrtd) / a;
         if root < t_min || t_max < root {
             root = (-half_b + sqrtd) / a;
