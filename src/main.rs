@@ -1,14 +1,19 @@
 #![allow(dead_code)]
+mod camera;
+mod color;
 mod hittable;
 mod hittable_list;
 mod ray;
 mod sphere;
 mod vec3;
+use camera::Camera;
+use color::Color;
 use hittable::Hittable;
 use hittable_list::HittableList;
+use rand::Rng;
 use ray::Ray;
 use sphere::Sphere;
-use vec3::{Color, Vec3};
+use vec3::Vec3;
 
 fn ray_color(r: Ray, world: &dyn Hittable) -> Color {
     if let Some(hit_record) = world.hit(r, 0.0, f64::INFINITY) {
@@ -25,6 +30,7 @@ fn main() {
     const ASPECT_RATIO: f64 = 16.0 / 9.0;
     const IMAGE_WIDTH: u64 = 400;
     const IMAGE_HEIGHT: u64 = ((IMAGE_WIDTH as f64) / ASPECT_RATIO) as u64;
+    const SAMPLES_PER_PIXEL: u64 = 100;
 
     // World
     let mut world = HittableList::new();
@@ -32,26 +38,30 @@ fn main() {
     world.add(Box::new(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0)));
 
     // Camera config
-    let viewport_height = 2.0;
-    let viewport_width = ASPECT_RATIO * viewport_height;
-    let focal_length = 1.0;
-
-    let origin = Vec3::zero();
-    let horizontal = Vec3::new(viewport_width, 0.0, 0.0);
-    let vertical = Vec3::new(0.0, viewport_height, 0.0);
-    let lower_left_corner =
-        origin - horizontal / 2.0 - vertical / 2.0 - Vec3::new(0.0, 0.0, focal_length);
+    let cam = Camera::new();
 
     // Render
-    println!("{}", format!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT));
+    let mut rng = rand::thread_rng();
+    let mut image_file_string = String::new();
+    image_file_string.push_str(&format!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT));
     for j in (0..=IMAGE_HEIGHT - 1).rev() {
         for i in 0..IMAGE_WIDTH {
-            let u = i as f64 / (IMAGE_WIDTH - 1) as f64;
-            let v = j as f64 / (IMAGE_HEIGHT - 1) as f64;
-            let direction = lower_left_corner + u * horizontal + v * vertical - origin;
-            let r = Ray::new(origin, direction);
-            let pixel_color = ray_color(r, &world);
-            println!("{}", pixel_color.get_color_string());
+            let mut pixel_color = Color::zero();
+            for _ in 0..SAMPLES_PER_PIXEL {
+                let u_rand: f64 = rng.gen();
+                let v_rand: f64 = rng.gen();
+                let u = (i as f64 + u_rand) / (IMAGE_WIDTH - 1) as f64;
+                let v = (j as f64 + v_rand) / (IMAGE_HEIGHT - 1) as f64;
+                let r = cam.get_ray(u, v);
+                pixel_color += ray_color(r, &world);
+            }
+
+            image_file_string.push_str(&format!(
+                "{}",
+                color::get_color_string(pixel_color, SAMPLES_PER_PIXEL)
+            ));
         }
     }
+
+    println!("{}", image_file_string);
 }

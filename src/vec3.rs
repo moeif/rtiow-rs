@@ -43,11 +43,6 @@ impl Vec3 {
         (x, y, z)
     }
 
-    pub fn get_color_string(&self) -> String {
-        let xyz = self.to_u64();
-        format!("{} {} {}\n", xyz.0, xyz.1, xyz.2)
-    }
-
     pub fn dot(u: Vec3, v: Vec3) -> f64 {
         u.x * v.x + u.y * v.y + u.z * v.z
     }
@@ -181,5 +176,3 @@ impl Div<f64> for Vec3 {
         }
     }
 }
-
-pub type Color = Vec3;
