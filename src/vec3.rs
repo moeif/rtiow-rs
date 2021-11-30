@@ -1,3 +1,4 @@
+use rand::Rng;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 #[derive(Debug, Copy, Clone)]
@@ -57,6 +58,23 @@ impl Vec3 {
 
     pub fn unit_vector(v: Self) -> Self {
         v / v.length()
+    }
+
+    pub fn random_in_unit_sphere() -> Vec3 {
+        let mut rng = rand::thread_rng();
+
+        let mut p: Vec3;
+        loop {
+            let x = rng.gen_range(-1.0..1.0);
+            let y = rng.gen_range(-1.0..1.0);
+            let z = rng.gen_range(-1.0..1.0);
+            p = Vec3::new(x, y, z);
+            if p.length_squared() >= 1.0 {
+                continue;
+            }
+            break;
+        }
+        return p;
     }
 }
 

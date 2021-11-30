@@ -24,7 +24,7 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn hit(&self, r: Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut result_hit_rec: Option<HitRecord> = None;
         let mut closet_so_far = t_max;
 
