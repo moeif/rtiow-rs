@@ -77,6 +77,15 @@ impl Vec3 {
         return p;
     }
 
+    pub fn near_zero(&self) -> bool {
+        let border: f64 = 1e-8;
+        self.x.abs() < border && self.y.abs() < border && self.z.abs() < border
+    }
+
+    pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
+        v - 2.0 * Vec3::dot(v, n) * n
+    }
+
     pub fn random_unit_vector() -> Vec3 {
         let point = Vec3::random_in_unit_sphere();
         return Vec3::unit_vector(point);
