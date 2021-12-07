@@ -86,6 +86,13 @@ impl Vec3 {
         v - 2.0 * Vec3::dot(v, n) * n
     }
 
+    pub fn refract(unit_in_v: Vec3, n: Vec3, etai_over_etat: f64) -> Vec3 {
+        let cos_theta = Vec3::dot(-unit_in_v, n).min(1.0);
+        let r_out_perp = etai_over_etat * (unit_in_v + cos_theta * n);
+        let r_out_parallel = -((1.0 - r_out_perp.length_squared()).abs().sqrt()) * n;
+        return r_out_perp + r_out_parallel;
+    }
+
     pub fn random_unit_vector() -> Vec3 {
         let point = Vec3::random_in_unit_sphere();
         return Vec3::unit_vector(point);

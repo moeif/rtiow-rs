@@ -11,7 +11,7 @@ use camera::Camera;
 use color::Color;
 use hittable::Hittable;
 use hittable_list::HittableList;
-use material::{Lambertian, Metal};
+use material::{Dielectric, Lambertian, Metal};
 use rand::Rng;
 use ray::Ray;
 use sphere::Sphere;
@@ -45,9 +45,10 @@ fn main() {
 
     let mut world = HittableList::new();
     let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
-    let material_center = Lambertian::new(Color::new(0.7, 0.3, 0.3));
-    let material_left = Metal::new(Color::new(0.8, 0.8, 0.8), 0.3);
-    let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 1.0);
+    let material_center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
+    let material_left = Dielectric::new(1.5);
+    let material_left2 = Dielectric::new(1.5);
+    let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 0.0);
 
     // World
 
@@ -66,6 +67,12 @@ fn main() {
         Vec3::new(-1.0, 0.0, -1.0),
         0.5,
         material_left,
+    )));
+
+    world.add(Box::new(Sphere::new(
+        Vec3::new(-1.0, 0.0, -1.0),
+        -0.4,
+        material_left2,
     )));
 
     world.add(Box::new(Sphere::new(

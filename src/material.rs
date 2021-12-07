@@ -2,6 +2,7 @@ use crate::color::Color;
 use crate::hittable::HitRecord;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
+use rand::Rng;
 
 pub trait Material {
     fn scatter(&self, r_in: &Ray, hit_record: &HitRecord) -> Option<(Ray, Color)>;
@@ -58,5 +59,49 @@ impl Material for Metal {
         } else {
             None
         }
+    }
+}
+
+pub struct Dielectric {
+    pub ir: f64,
+}
+
+impl Dielectric {
+    pub fn new(ir: f64) -> Self {
+        Self { ir }
+    }
+
+    pub fn reflectance(cosine: f64, ref_idx: f64) -> f64 {
+        let mut r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
+        r0 = r0 * r0;
+        return r0 + (1.0 - r0) * (1.0 - cosine).powf(5.0);
+    }
+}
+
+impl Material for Dielectric {
+    fn scatter(&self, r_in: &Ray, hit_record: &HitRecord) -> Option<(Ray, Color)> {
+        let attenuation = Color::one();
+        let refraction_ratio = if hit_record.front_face {
+            1.0 / self.ir
+        } else {
+            self.ir
+        };
+        let unit_in_direction = Vec3::unit_vector(r_in.direction);
+
+        let cos_theta = Vec3::dot(-unit_in_direction, hit_record.normal).min(1.0);
+        let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
+        let cannot_refract = refraction_ratio * sin_theta > 1.0;
+        let mut rng = rand::thread_rng();
+        let random_double = rng.gen();
+        let direction = if cannot_refract
+            || Dielectric::reflectance(cos_theta, refraction_ratio) > random_double
+        {
+            Vec3::reflect(unit_in_direction, hit_record.normal)
+        } else {
+            Vec3::refract(unit_in_direction, hit_record.normal, refraction_ratio)
+        };
+
+        let scattered = Ray::new(hit_record.p, direction);
+        return Some((scattered, attenuation));
     }
 }
