@@ -82,7 +82,13 @@ fn main() {
     )));
 
     // Camera config
-    let cam = Camera::new();
+    let cam = Camera::new(
+        Vec3::new(-2.0, 2.0, 1.0),
+        Vec3::new(0.0, 0.0, -1.0),
+        Vec3::new(0.0, 1.0, 0.0),
+        20.0,
+        16.0 / 9.0,
+    );
 
     // Render
     let mut rng = rand::thread_rng();
