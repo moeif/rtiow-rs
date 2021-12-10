@@ -41,7 +41,7 @@ fn main() {
     const IMAGE_WIDTH: u64 = 600;
     const IMAGE_HEIGHT: u64 = ((IMAGE_WIDTH as f64) / ASPECT_RATIO) as u64;
     const SAMPLES_PER_PIXEL: u64 = 100;
-    const MAX_DEPTH: i32 = 50;
+    const MAX_DEPTH: i32 = 20;
 
     let mut world = HittableList::new();
     let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
@@ -82,12 +82,20 @@ fn main() {
     )));
 
     // Camera config
+    let lookfrom = Vec3::new(3.0, 3.0, 2.0);
+    let lookat = Vec3::new(0.0, 0.0, -1.0);
+    let vup = Vec3::new(0.0, 1.0, 0.0);
+    let dist_to_focus = (lookfrom - lookat).length();
+    let aperture = 2.0;
+    let aspect_ratio = 16.0 / 9.0;
     let cam = Camera::new(
-        Vec3::new(-2.0, 2.0, 1.0),
-        Vec3::new(0.0, 0.0, -1.0),
-        Vec3::new(0.0, 1.0, 0.0),
-        90.0,
-        16.0 / 9.0,
+        lookfrom,
+        lookat,
+        vup,
+        20.0,
+        aspect_ratio,
+        aperture,
+        dist_to_focus,
     );
 
     // Render
