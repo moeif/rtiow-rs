@@ -60,6 +60,22 @@ impl Vec3 {
         v / v.length()
     }
 
+    pub fn random() -> Vec3 {
+        let mut rng = rand::thread_rng();
+        let x = rng.gen();
+        let y = rng.gen();
+        let z = rng.gen();
+        Vec3 { x, y, z }
+    }
+
+    pub fn random_range(min: f64, max: f64) -> Vec3 {
+        let mut rng = rand::thread_rng();
+        let x = rng.gen_range(min..max);
+        let y = rng.gen_range(min..max);
+        let z = rng.gen_range(min..max);
+        Vec3 { x, y, z }
+    }
+
     pub fn random_in_unit_sphere() -> Vec3 {
         let mut rng = rand::thread_rng();
 
